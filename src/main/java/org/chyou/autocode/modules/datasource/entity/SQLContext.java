@@ -1,6 +1,7 @@
 package org.chyou.autocode.modules.datasource.entity;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.chyou.autocode.modules.datasource.utils.FieldUtil;
 
 import java.util.List;
@@ -25,13 +26,31 @@ public class SQLContext {
 		// 默认为全字母小写的类名
 		this.packageName = getJavaBeanName().toLowerCase();
 	}
-	
+
+	/**
+	 * 类名（大写）
+	 * @return
+	 */
 	public String getJavaBeanName(){
-		String tableName = tableDefinition.getTableName();
-		tableName = FieldUtil.underlineFilter(tableName);
-		return FieldUtil.upperFirstLetter(tableName);
+		return FieldUtil.upperFirstLetter(this.getJavaBeanNameL());
 	}
-	
+
+	/**
+	 * 类名（小写）
+	 * @return
+	 */
+	public String getJavaBeanNameL(){
+		String tableName = tableDefinition.getTableName();
+		boolean flag = tableName.contains("_");
+		if(flag){
+			String preChar = StringUtils.substring(tableName,0,tableName.indexOf("_"));
+			if(preChar.length()==1){
+				tableName = StringUtils.substring(tableName,tableName.indexOf("_")+1);
+			}
+			tableName = FieldUtil.underlineFilter(tableName);
+		}
+		return tableName;
+	}
 	public String getPkName(){
 		if(this.tableDefinition.getPkColumn() != null){
 			return this.tableDefinition.getPkColumn().getColumnName();
